@@ -27,7 +27,7 @@
     display:flex;justify-content:center;
   }
   .app{
-    width:100%;max-width:480px;min-height:100vh;
+    width:100%;min-height:100vh;
     background:
       radial-gradient(circle at 18% 12%, rgba(255,210,63,.20) 0 56px, transparent 57px),
       radial-gradient(circle at 86% 28%, rgba(0,187,167,.15) 0 44px, transparent 45px),
@@ -267,6 +267,56 @@
   .btn:focus-visible,.tile:focus-visible,.opt:focus-visible,.word-chip:focus-visible,
   .darjah-btn:focus-visible,.module-card:focus-visible,.back-btn:focus-visible,.email-input:focus-visible{
     outline:4px solid var(--kuning);outline-offset:2px;
+  }
+
+
+  /* ============ TABLET & DESKTOP (penuh lebar) ============ */
+  @media (min-width:700px){
+    header{
+      padding-left:max(40px, calc((100% - 980px)/2 + 40px));
+      padding-right:max(40px, calc((100% - 980px)/2 + 40px));
+      padding-top:14px;padding-bottom:12px;
+    }
+    .logo{font-size:1.6rem}
+    .logo img{width:42px;height:42px}
+    .page-inner{max-width:980px;width:100%;margin:0 auto;padding:28px 40px 44px}
+
+    .greeting{gap:24px;align-items:center}
+    .greeting img.hero{height:220px}
+    .bubble{font-size:1.2rem;padding:16px 22px}
+
+    .darjah-row{gap:14px}
+    .darjah-btn{font-size:1.25rem;padding:16px 0}
+
+    .modules{flex-direction:row;gap:16px;align-items:stretch}
+    .module-card{flex:1;flex-direction:column;text-align:center;gap:12px;padding:22px 14px;justify-content:flex-start}
+    .module-card img.avatar{width:76px;height:76px}
+    .module-card h3{font-size:1.4rem}
+    .module-card p{font-size:.9rem}
+    .module-card .m-arrow{display:none}
+
+    .kawan img.avatar{width:58px;height:58px}
+    .kawan{font-size:.8rem}
+    .email-input{max-width:520px}
+
+    .lesson-top,.guide-row,.q-card,.feedback{max-width:760px;width:100%;margin-left:auto;margin-right:auto}
+    .guide-row{margin-top:20px;margin-bottom:14px}
+    .feedback.show{margin-top:16px}
+    .guide-bubble{font-size:1.15rem}
+    .q-card{padding:30px 26px;gap:22px}
+    .q-emoji{font-size:4.8rem}
+    .q-objects{font-size:2.2rem}
+    .q-math{font-size:2.5rem}
+    .slot{min-width:66px;height:66px;font-size:1.55rem}
+    .tile{min-width:66px;height:66px;font-size:1.5rem}
+    .opt{min-width:88px;height:72px;font-size:1.6rem}
+    .word-chip{font-size:1.2rem;padding:11px 16px}
+    canvas.trace{max-width:500px}
+
+    .reward-stars{font-size:3.6rem}
+    .reward-title{font-size:2.7rem}
+    .reward-sub{font-size:1.1rem;max-width:460px}
+    #rewardAvatar img{height:250px}
   }
 
 </style>
