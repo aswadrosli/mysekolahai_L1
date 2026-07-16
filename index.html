@@ -19,8 +19,9 @@
     --radius:22px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%}
+  html{height:100%}
   body{
+    min-height:100%;
     font-family:'Nunito',sans-serif;color:var(--ink);
     background:linear-gradient(160deg,#8ED0FF 0%,#C7A6FF 55%,#FFC6E0 100%);
     background-attachment:fixed;
@@ -35,7 +36,7 @@
       radial-gradient(circle at 92% 86%, rgba(58,134,255,.13) 0 56px, transparent 57px),
       var(--paper);
     box-shadow:0 0 48px rgba(58,46,79,.28);
-    display:flex;flex-direction:column;position:relative;overflow:hidden;
+    display:flex;flex-direction:column;position:relative;
   }
   .page-inner{padding:20px 22px 28px;flex:1;display:flex;flex-direction:column;position:relative}
 
@@ -244,7 +245,7 @@
   @keyframes pop{0%{transform:scale(.4);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
   .pop{animation:pop .45s}
 
-  #reward .page-inner{align-items:center;justify-content:center;text-align:center;gap:14px}
+  #reward .page-inner{align-items:center;justify-content:center;text-align:center;gap:14px;overflow:hidden}
   .reward-stars{font-size:3rem;letter-spacing:6px}
   .reward-title{
     font-size:2.2rem;font-weight:700;
@@ -934,11 +935,35 @@ function spawnConfetti(){
   }
 }
 
-/* ================= TTS pelayar (percuma, tiada API) ================= */
+/* ================= TTS pelayar (percuma, tiada API) =================
+   Cari suara Bahasa Melayu pada peranti. Jika tiada, guna suara
+   Indonesia sebagai gantian terdekat (sebutan hampir sama untuk
+   teks BM). Jika kedua-duanya tiada, beritahu pengguna. */
+let bmVoice = null, bmVoiceExact = false;
+function pickVoice(){
+  const vs = speechSynthesis.getVoices();
+  let v = vs.find(v => v.lang && v.lang.toLowerCase().replace('_','-').startsWith('ms'))
+       || vs.find(v => /malay|melayu/i.test(v.name));
+  if(v){ bmVoice = v; bmVoiceExact = true; return; }
+  v = vs.find(v => v.lang && v.lang.toLowerCase().startsWith('id'));
+  if(v){ bmVoice = v; bmVoiceExact = false; }
+}
+pickVoice();
+if(typeof speechSynthesis !== 'undefined'){
+  speechSynthesis.onvoiceschanged = pickVoice;
+}
 $('speakBtn').addEventListener('click', ()=>{
   const q = questions()[state.qIndex];
+  if(!bmVoice) pickVoice();
+  if(!bmVoice){
+    showFeedback(false, 'Maaf, peranti ini tiada suara Bahasa Melayu. Sila pasang suara Melayu dalam tetapan peranti.');
+    setTimeout(hideFeedback, 3500);
+    return;
+  }
   const u = new SpeechSynthesisUtterance(q.prompt);
-  u.lang = 'ms-MY'; u.rate = .9;
+  u.voice = bmVoice;
+  u.lang = bmVoice.lang;
+  u.rate = .85;
   speechSynthesis.cancel();
   speechSynthesis.speak(u);
 });
