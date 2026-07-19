@@ -923,10 +923,12 @@ function onCorrect(q){
     const sc = document.querySelector('.star-count');
     if(sc){ sc.classList.remove('pulse'); void sc.offsetWidth; sc.classList.add('pulse'); }
   }
-  const pujian = PUJIAN[Math.floor(Math.random()*PUJIAN.length)];
+  const nama = $('studentName').value.trim();
+  const pujian = PUJIAN[Math.floor(Math.random()*PUJIAN.length)].replace('!','');
+  const ucapan = nama ? `${pujian}, ${nama}!` : `${pujian}!`;
   playCorrect();
-  setTimeout(()=> speakShort(pujian), 420);
-  showFeedback(true, pujian + (state.qFirstTry ? ' ⭐' : ''));
+  setTimeout(()=> speakShort(ucapan), 420);
+  showFeedback(true, ucapan + (state.qFirstTry ? ' ⭐' : ''));
   setTimeout(()=>{
     state.qIndex++;
     if(state.qIndex >= questions().length) showReward();
@@ -936,11 +938,13 @@ function onCorrect(q){
 function onWrong(q, resetFn){
   state.qFirstTry = false;
   playWrong();
-  setTimeout(()=> speakShort('Cuba lagi!'), 320);
+  const namaW = $('studentName').value.trim();
+  setTimeout(()=> speakShort(namaW ? `Cuba lagi, ${namaW}!` : 'Cuba lagi!'), 320);
   $('qCard').classList.remove('shake');
   void $('qCard').offsetWidth;
   $('qCard').classList.add('shake');
-  showFeedback(false, 'Cuba lagi! ' + q.hint);
+  const namaFb = $('studentName').value.trim();
+  showFeedback(false, (namaFb ? `Cuba lagi, ${namaFb}! ` : 'Cuba lagi! ') + q.hint);
   setTimeout(resetFn, 600);
 }
 function showFeedback(ok, text){
