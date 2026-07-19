@@ -67,10 +67,19 @@
   }
 
   .screen{display:none;flex:1;flex-direction:column}
-  .screen.active{display:flex;animation:screenIn .45s cubic-bezier(.22,.9,.32,1.12)}
-  @keyframes screenIn{from{opacity:0;transform:translateY(26px) scale(.975)}to{opacity:1;transform:none}}
-  @keyframes launch{0%{transform:scale(1)}45%{transform:scale(1.09) rotate(-1.5deg)}100%{transform:scale(.94)}}
-  .module-card.launch{animation:launch .3s ease forwards}
+  .screen.active{display:flex;animation:screenIn .55s cubic-bezier(.2,.9,.3,1.18)}
+  @keyframes screenIn{from{opacity:0;transform:translateY(44px) scale(.95)}to{opacity:1;transform:none}}
+  @keyframes launch{0%{transform:scale(1)}40%{transform:scale(1.13) rotate(-2.5deg)}75%{transform:scale(.9) rotate(1deg)}100%{transform:scale(.96)}}
+  .module-card.launch{animation:launch .4s ease forwards;box-shadow:0 0 0 6px rgba(255,210,63,.55)!important}
+  @keyframes slideUp{from{opacity:0;transform:translateY(34px)}to{opacity:1;transform:none}}
+  .modules .module-card{animation:slideUp .55s both}
+  .modules .module-card:nth-child(1){animation-delay:.05s}
+  .modules .module-card:nth-child(2){animation-delay:.18s}
+  .modules .module-card:nth-child(3){animation-delay:.31s}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+  .greeting img.hero{animation:floaty 3s ease-in-out infinite}
+  @keyframes starPulse{0%{transform:scale(1)}50%{transform:scale(1.28) rotate(-5deg)}100%{transform:scale(1)}}
+  .star-count.pulse{animation:starPulse .5s}
   .sound-btn{border:none;background:none;font-size:1.5rem;cursor:pointer;line-height:1;padding:4px}
 
   .avatar{border-radius:50%;background:#fff;object-fit:cover;flex-shrink:0;box-shadow:0 3px 8px rgba(58,46,79,.18)}
@@ -267,7 +276,8 @@
   @keyframes fall{to{transform:translateY(105vh) rotate(560deg)}}
 
   @media (prefers-reduced-motion:reduce){
-    *{animation:none!important;transition:none!important}
+    .q-emoji,.greeting img.hero{animation:none!important}
+    .confetti-piece{display:none!important}
   }
   .btn:focus-visible,.tile:focus-visible,.opt:focus-visible,.word-chip:focus-visible,
   .darjah-btn:focus-visible,.module-card:focus-visible,.back-btn:focus-visible,.email-input:focus-visible{
@@ -682,7 +692,7 @@ document.querySelectorAll('.module-card').forEach(card=>{
     setTimeout(()=>{
       card.classList.remove('launch');
       startLesson(card.dataset.m);
-    }, 300);
+    }, 380);
   });
 });
 $('backBtn').addEventListener('click', ()=> show('home'));
@@ -908,7 +918,11 @@ $('soundBtn').addEventListener('click', ()=>{
 });
 
 function onCorrect(q){
-  if(state.qFirstTry){ state.correct++; state.stars++; $('starTotal').textContent = state.stars; }
+  if(state.qFirstTry){
+    state.correct++; state.stars++; $('starTotal').textContent = state.stars;
+    const sc = document.querySelector('.star-count');
+    if(sc){ sc.classList.remove('pulse'); void sc.offsetWidth; sc.classList.add('pulse'); }
+  }
   const pujian = PUJIAN[Math.floor(Math.random()*PUJIAN.length)];
   playCorrect();
   setTimeout(()=> speakShort(pujian), 420);
@@ -1016,14 +1030,13 @@ function spawnConfetti(){
    Cari suara Bahasa Melayu pada peranti. Jika tiada, guna suara
    Indonesia sebagai gantian terdekat (sebutan hampir sama untuk
    teks BM). Jika kedua-duanya tiada, beritahu pengguna. */
-let bmVoice = null, bmVoiceExact = false;
+let bmVoice = null;
 function pickVoice(){
   const vs = speechSynthesis.getVoices();
-  let v = vs.find(v => v.lang && v.lang.toLowerCase().replace('_','-').startsWith('ms'))
-       || vs.find(v => /malay|melayu/i.test(v.name));
-  if(v){ bmVoice = v; bmVoiceExact = true; return; }
-  v = vs.find(v => v.lang && v.lang.toLowerCase().startsWith('id'));
-  if(v){ bmVoice = v; bmVoiceExact = false; }
+  // Bahasa Melayu SAHAJA — tiada suara Indonesia sebagai gantian
+  bmVoice = vs.find(v => v.lang && v.lang.toLowerCase().replace('_','-').startsWith('ms'))
+         || vs.find(v => /malay|melayu/i.test(v.name))
+         || null;
 }
 pickVoice();
 if(typeof speechSynthesis !== 'undefined'){
