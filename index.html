@@ -368,6 +368,83 @@
   .splash-sub{font-weight:800;color:#fff;opacity:.92;animation:slideUp .6s .6s both}
   @media (min-width:700px){ .splash-hero{height:300px} .splash-logo{font-size:4rem} }
 
+  /* ============ ZON PERMAINAN ============ */
+  .games-row{flex-direction:row;flex-wrap:wrap}
+  .games-row .module-card{flex:1 1 46%}
+  @media (max-width:699px){
+    .games-row{flex-direction:column}
+    .games-row .module-card{flex:1 1 auto}
+  }
+  #gameBoard{margin-top:6px}
+
+  /* memori */
+  .mem-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:560px;margin:0 auto;width:100%}
+  .mem-card{background:none;border:none;padding:0;cursor:pointer;perspective:600px;height:78px}
+  .mem-inner{position:relative;width:100%;height:100%;transition:transform .4s;transform-style:preserve-3d;display:block}
+  .mem-card.flipped .mem-inner{transform:rotateY(180deg)}
+  .mem-face{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    backface-visibility:hidden;border-radius:14px;border:3px solid var(--biru);
+    font-family:'Fredoka',sans-serif;font-weight:600}
+  .mem-front{background:linear-gradient(180deg,#5B9BFF,var(--biru));color:#fff;font-size:1.5rem}
+  .mem-back{background:#fff;transform:rotateY(180deg)}
+  .mem-back.emoji{font-size:2rem}
+  .mem-back.word{font-size:1rem;color:var(--biru-d);padding:0 4px;text-align:center}
+  .mem-card.matched .mem-face{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,187,167,.3)}
+  .mem-card.matched{pointer-events:none;animation:pop .4s}
+  @media (min-width:700px){ .mem-grid{grid-template-columns:repeat(5,1fr)} .mem-card{height:92px} .mem-back.emoji{font-size:2.5rem} }
+
+  /* silang kata */
+  .cw-grid{--cwc:32px;display:grid;gap:3px;justify-content:center;margin:0 auto}
+  .cw-cell{width:var(--cwc);height:var(--cwc);border:2px solid #C9B8EA;border-radius:7px;background:#fff;
+    font-family:'Fredoka',sans-serif;font-weight:600;font-size:calc(var(--cwc)*.5);color:var(--ink);
+    cursor:pointer;padding:0;position:relative}
+  .cw-cell[data-num]::before{content:attr(data-num);position:absolute;top:0;left:2px;font-size:.55rem;color:var(--ungu-d);font-weight:800}
+  .cw-block{width:var(--cwc);height:var(--cwc)}
+  .cw-cell.sel{background:#F3EBFD;border-color:var(--ungu)}
+  .cw-cell.cur{background:#FFF3C4;border-color:var(--kuning-d)}
+  .cw-cell.locked{background:#E4FBF7;border-color:var(--teal);color:var(--teal-d)}
+  .cw-clues{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:14px 0 10px}
+  .cw-clue{display:flex;align-items:center;gap:6px;border:2.5px solid var(--ungu);border-radius:12px;
+    background:#fff;padding:6px 10px;cursor:pointer;font-weight:800;color:var(--ungu-d)}
+  .cw-clue span{font-size:1.4rem}
+  .cw-clue.sel{background:#F3EBFD}
+  .cw-clue.done{border-color:var(--teal);color:var(--teal-d);opacity:.75}
+  .cw-clue.done::after{content:'✓';font-weight:800}
+  .cw-keys{display:grid;grid-template-columns:repeat(9,1fr);gap:6px;max-width:480px;margin:0 auto;width:100%}
+  .cw-key{height:42px;border-radius:10px;border:2.5px solid var(--biru);border-bottom-width:5px;background:#fff;
+    color:var(--biru-d);font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.05rem;cursor:pointer}
+  .cw-key:active{transform:translateY(2px);border-bottom-width:2.5px}
+  .cw-del{color:var(--merah, #E0442E);border-color:var(--pink)}
+  @media (min-width:700px){ .cw-grid{--cwc:42px} .cw-key{height:50px} }
+
+  /* cari perkataan */
+  .ws-grid{display:grid;grid-template-columns:repeat(9,1fr);gap:4px;max-width:440px;margin:0 auto;width:100%}
+  .ws-cell{aspect-ratio:1;border:2px solid #C9B8EA;border-radius:8px;background:#fff;
+    font-family:'Fredoka',sans-serif;font-weight:600;font-size:1rem;color:var(--ink);cursor:pointer;padding:0}
+  .ws-cell.ws-anchor{background:#FFF3C4;border-color:var(--kuning-d);transform:scale(1.1)}
+  .ws-cell.ws-found{background:#E4FBF7;border-color:var(--teal);color:var(--teal-d)}
+  .ws-words{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+  .ws-word{border:2.5px solid var(--biru);border-radius:12px;background:#fff;padding:6px 10px;
+    font-weight:800;color:var(--biru-d)}
+  .ws-word.done{border-color:var(--teal);color:var(--teal-d);text-decoration:line-through;opacity:.75}
+  @media (min-width:700px){ .ws-grid{max-width:520px} .ws-cell{font-size:1.2rem} }
+
+  /* letupkan belon */
+  .bel-q{font-family:'Fredoka',sans-serif;font-weight:600;font-size:2.2rem;color:var(--biru-d);text-align:center;margin:6px 0 14px}
+  .bel-field{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;align-items:center;min-height:220px}
+  .belon{position:relative;width:86px;height:104px;border:none;background:none;cursor:pointer;
+    animation:belBob 2.6s ease-in-out infinite}
+  .belon span{display:flex;align-items:center;justify-content:center;width:86px;height:96px;border-radius:50% 50% 48% 48%;
+    background:radial-gradient(circle at 32% 28%, rgba(255,255,255,.75) 0 14%, transparent 15%), var(--bc);
+    color:#fff;font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.5rem;
+    box-shadow:0 6px 12px rgba(58,46,79,.2)}
+  .belon i{position:absolute;left:50%;bottom:-8px;width:2px;height:16px;background:rgba(58,46,79,.4)}
+  @keyframes belBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+  .belon.pop-belon{animation:belPop .45s forwards}
+  @keyframes belPop{40%{transform:scale(1.25)}100%{transform:scale(0);opacity:0}}
+  .belon.bel-wrong{animation:shake .4s}
+  @media (min-width:700px){ .belon{width:104px;height:124px} .belon span{width:104px;height:114px;font-size:1.8rem} .bel-q{font-size:2.8rem} }
+
 </style>
 </head>
 <body>
@@ -425,6 +502,30 @@
         </button>
       </div>
 
+      <div class="section-label">Zon Permainan</div>
+      <div class="modules games-row">
+        <button class="module-card" data-g="memori">
+          <img class="avatar" data-av="enisa" width="52" height="52" alt="Enisa">
+          <span class="m-info"><h3 id="gT-memori">🧠 Memori</h3><p id="gP-memori">Padankan gambar &amp; perkataan bersama Enisa</p></span>
+          <span class="m-arrow">›</span>
+        </button>
+        <button class="module-card" data-g="silang">
+          <img class="avatar" data-av="bayu" width="52" height="52" alt="Bayu">
+          <span class="m-info"><h3 id="gT-silang">🧩 Silang Kata</h3><p id="gP-silang">Isi perkataan bersama Bayu</p></span>
+          <span class="m-arrow">›</span>
+        </button>
+        <button class="module-card" data-g="cari">
+          <img class="avatar" data-av="hans" width="52" height="52" alt="Hans">
+          <span class="m-info"><h3 id="gT-cari">🔍 Cari Perkataan</h3><p id="gP-cari">Cari perkataan tersembunyi bersama Hans</p></span>
+          <span class="m-arrow">›</span>
+        </button>
+        <button class="module-card" data-g="belon">
+          <img class="avatar" data-av="aiman" width="52" height="52" alt="Aiman">
+          <span class="m-info"><h3 id="gT-belon">🎈 Letupkan Belon</h3><p id="gP-belon">Letupkan jawapan betul bersama Aiman</p></span>
+          <span class="m-arrow">›</span>
+        </button>
+      </div>
+
       <div class="section-label">Kawan-Kawan Skuad</div>
       <div class="kawan-strip">
         <span class="kawan"><img class="avatar" data-av="enisa" width="44" height="44" alt="Enisa">Enisa</span>
@@ -470,6 +571,26 @@
   </section>
 
   <!-- REWARD -->
+  <!-- GAME -->
+  <section class="screen" id="game">
+    <div class="page-inner">
+      <div class="lesson-top">
+        <button class="back-btn" id="gameBackBtn">‹ Balik</button>
+        <div class="garis-tiga" style="flex:1"><h2 id="gameTitle"></h2></div>
+        <span class="pcount" id="gameInfo"></span>
+      </div>
+      <div class="guide-row">
+        <img class="avatar" id="gameAvatar" width="52" height="52" alt="">
+        <div class="guide-bubble"><span id="gameHint"></span></div>
+      </div>
+      <div id="gameBoard"></div>
+      <div class="reward-actions" id="gameActions" style="display:none;margin:18px auto 0">
+        <button class="btn btn-luar" id="gameHomeBtn">Balik ke Rumah</button>
+        <button class="btn btn-biru" id="gameAgainBtn">Main Lagi</button>
+      </div>
+    </div>
+  </section>
+
   <section class="screen" id="reward">
     <div class="page-inner">
       <div class="reward-stars pop" id="rewardStars">⭐⭐⭐</div>
@@ -1093,9 +1214,9 @@ SekolahAI — Bukan Sekolah Biasa`;
 $('emailBtn').addEventListener('click', sendReport);
 
 /* ================= CONFETTI ================= */
-function spawnConfetti(){
+function spawnConfetti(hostSel){
   if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const host = document.querySelector('#reward .page-inner');
+  const host = document.querySelector(hostSel || '#reward .page-inner');
   const colors = ['#FF5D8F','#FFD23F','#00BBA7','#3A86FF','#9B5DE5','#FF7B39'];
   for(let i=0;i<18;i++){
     const p = document.createElement('span');
@@ -1184,7 +1305,7 @@ const UI = {
     year:'Darjah',
     modules:{membaca:'Membaca', menulis:'Menulis', mengira:'Mengira'},
     greet:'Hai! Saya <b>Aiman</b>. Jom kita belajar 3M — Membaca, Menulis &amp; Mengira! 🚀',
-    lblDarjah:'Pilih Darjah', lblMisi:'Pilih Misi Hari Ini', lblKawan:'Kawan-Kawan Skuad',
+    lblDarjah:'Pilih Darjah', lblMisi:'Pilih Misi Hari Ini', lblGames:'Zon Permainan', lblKawan:'Kawan-Kawan Skuad',
     lblNama:'Nama Murid', lblEmel:'E-mel Ibu Bapa (untuk laporan automatik)',
     emailNote:'Laporan dihantar secara automatik setiap kali murid tamat misi.',
     cardT:{membaca:'📖 Membaca', menulis:'✍️ Menulis', mengira:'🔢 Mengira'},
@@ -1199,7 +1320,7 @@ const UI = {
     year:'Year',
     modules:{membaca:'Reading', menulis:'Writing', mengira:'Counting'},
     greet:"Hi! I'm <b>Aiman</b>. Let's learn the 3Ms — Reading, Writing &amp; Counting! 🚀",
-    lblDarjah:'Choose Year', lblMisi:"Choose Today's Mission", lblKawan:'Squad Friends',
+    lblDarjah:'Choose Year', lblMisi:"Choose Today's Mission", lblGames:'Game Zone', lblKawan:'Squad Friends',
     lblNama:'Student Name', lblEmel:"Parent's Email (for automatic report)",
     emailNote:'A report is sent automatically each time the student finishes a mission.',
     cardT:{membaca:'📖 Reading', menulis:'✍️ Writing', mengira:'🔢 Counting'},
@@ -1268,12 +1389,516 @@ function trText(s, rules){
 }
 function trPrompt(s){ return trText(s, TR_RULES); }
 function trHint(s){ return trText(s, HINT_RULES); }
+/* ================= ZON PERMAINAN ================= */
+const GAME_T = {
+  bm: {
+    cardT:{memori:'🧠 Memori', silang:'🧩 Silang Kata', cari:'🔍 Cari Perkataan', belon:'🎈 Letupkan Belon'},
+    cardP:{memori:'Padankan gambar & perkataan bersama Enisa', silang:'Isi perkataan bersama Bayu',
+           cari:'Cari perkataan tersembunyi bersama Hans', belon:'Letupkan jawapan betul bersama Aiman'},
+    title:{memori:'Memori', silang:'Silang Kata', cari:'Cari Perkataan', belon:'Letupkan Belon'},
+    hint:{memori:'Cari pasangan: gambar dan perkataannya!',
+          silang:'Tekan petak, kemudian tekan huruf. Petunjuk ialah gambar!',
+          cari:'Tekan huruf pertama, kemudian huruf terakhir perkataan!',
+          belon:'Letupkan belon dengan jawapan yang betul!'},
+    done:{memori:'Syabas! Semua padanan dijumpai!', silang:'Syabas! Silang kata lengkap!',
+          cari:'Syabas! Semua perkataan dijumpai!', belon:'Syabas! Semua belon diletupkan!'},
+    moves:'Langkah',
+  },
+  en: {
+    cardT:{memori:'🧠 Memory', silang:'🧩 Crossword', cari:'🔍 Word Search', belon:'🎈 Balloon Pop'},
+    cardP:{memori:'Match pictures & words with Enisa', silang:'Fill in words with Bayu',
+           cari:'Find hidden words with Hans', belon:'Pop the right answers with Aiman'},
+    title:{memori:'Memory', silang:'Crossword', cari:'Word Search', belon:'Balloon Pop'},
+    hint:{memori:'Find the pairs: a picture and its word!',
+          silang:'Tap a square, then tap letters. The clues are pictures!',
+          cari:'Tap the first letter, then the last letter of a word!',
+          belon:'Pop the balloon with the correct answer!'},
+    done:{memori:'Well done! All pairs found!', silang:'Well done! Crossword complete!',
+          cari:'Well done! All words found!', belon:'Well done! All balloons popped!'},
+    moves:'Moves',
+  },
+};
+const GAME_GUIDES = {memori:'enisa', silang:'bayu', cari:'hans', belon:'aiman'};
+let curGame = null, memState = null, cwState = null, wsState = null, belState = null;
+
+function rnd(a,b){ return a + Math.floor(Math.random()*(b-a+1)); }
+function starBurst(n){
+  state.stars += n; $('starTotal').textContent = state.stars;
+  const sc = document.querySelector('.star-count');
+  if(sc){ sc.classList.remove('pulse'); void sc.offsetWidth; sc.classList.add('pulse'); }
+}
+function refreshGameTexts(){
+  const g = GAME_T[lang], u = UI[lang];
+  ['memori','silang','cari','belon'].forEach(k=>{
+    const tEl = document.getElementById('gT-'+k), pEl = document.getElementById('gP-'+k);
+    if(tEl) tEl.textContent = g.cardT[k];
+    if(pEl) pEl.textContent = g.cardP[k];
+  });
+  const set = (id,v)=>{ const el = document.getElementById(id); if(el) el.textContent = v; };
+  set('gameBackBtn', u.back); set('gameHomeBtn', u.home); set('gameAgainBtn', u.again);
+  if(curGame){
+    set('gameTitle', g.title[curGame] + ' · ' + u.year + ' ' + state.darjah);
+    set('gameHint', g.hint[curGame]);
+  }
+}
+function wordPairs(d){
+  return BANK.membaca[d].filter(q => q.skill === 'membaca-cam-perkataan')
+    .map(q => ({word: q.answer, emoji: q.objects}));
+}
+function startGame(kind){
+  curGame = kind;
+  const gd = CHARACTERS[GAME_GUIDES[kind]];
+  $('gameAvatar').src = gd.head;
+  $('gameAvatar').style.border = '2.5px solid ' + gd.color;
+  $('gameActions').style.display = 'none';
+  show('game');
+  refreshGameTexts();
+  if(kind === 'memori') startMemori();
+  else if(kind === 'silang') startSilang();
+  else if(kind === 'cari') startCari();
+  else startBelon();
+}
+function finishGame(kind, stars){
+  $('gameHint').textContent = GAME_T[lang].done[kind];
+  if(stars) starBurst(stars);
+  const nama = $('studentName').value.trim();
+  setTimeout(()=> speakShort((lang === 'bm' ? 'Syabas' : 'Well done') + (nama ? ', ' + nama : '') + '!'), 600);
+  [523.25,659.25,783.99,1046.5,1318.5].forEach((f,i)=> tone(f, i*0.11, 0.4, 'triangle', 0.18));
+  spawnConfetti('#game .page-inner');
+  $('gameActions').style.display = 'flex';
+}
+
+/* ---------- 1) MEMORI ---------- */
+function startMemori(){
+  const nPairs = state.darjah === 1 ? 6 : state.darjah === 2 ? 8 : 10;
+  const pairs = shuffle(wordPairs(state.darjah)).slice(0, nPairs);
+  const deck = shuffle(pairs.flatMap((p,i)=>[
+    {pid:i, face:p.emoji, kind:'emoji', word:p.word},
+    {pid:i, face:p.word, kind:'word', word:p.word},
+  ]));
+  memState = {deck, open:[], matched:new Set(), moves:0, lock:false};
+  $('gameBoard').innerHTML = '<div class="mem-grid">' + deck.map((c,i)=>
+    `<button class="mem-card" data-i="${i}" aria-label="kad">
+       <span class="mem-inner">
+         <span class="mem-face mem-front">❓</span>
+         <span class="mem-face mem-back ${c.kind}">${c.face}</span>
+       </span>
+     </button>`).join('') + '</div>';
+  $('gameInfo').textContent = GAME_T[lang].moves + ': 0';
+  $('gameBoard').querySelectorAll('.mem-card').forEach(el=>{
+    el.addEventListener('click', ()=> flipMem(+el.dataset.i, el));
+  });
+}
+function flipMem(i, el){
+  const s = memState;
+  if(s.lock || s.matched.has(i) || s.open.some(o=>o.i===i)) return;
+  ensureAudio(); playTap();
+  el.classList.add('flipped');
+  s.open.push({i, el});
+  if(s.open.length < 2) return;
+  s.moves++;
+  $('gameInfo').textContent = GAME_T[lang].moves + ': ' + s.moves;
+  const [a,b] = s.open;
+  if(s.deck[a.i].pid === s.deck[b.i].pid){
+    s.matched.add(a.i); s.matched.add(b.i);
+    a.el.classList.add('matched'); b.el.classList.add('matched');
+    s.open = [];
+    playCorrect();
+    setTimeout(()=> speakShort(s.deck[a.i].word), 380);
+    if(s.matched.size === s.deck.length) finishGame('memori', 3);
+  } else {
+    s.lock = true;
+    setTimeout(()=>{
+      a.el.classList.remove('flipped'); b.el.classList.remove('flipped');
+      s.open = []; s.lock = false;
+    }, 750);
+  }
+}
+
+/* ---------- 2) SILANG KATA ---------- */
+function buildCrossword(words){
+  const size = 13;
+  const grid = Array.from({length:size}, ()=> Array(size).fill(null));
+  const placed = [];
+  function canPlace(w, r, c, dr, dc){
+    if(r < 0 || c < 0) return false;
+    if(r + dr*(w.length-1) >= size || c + dc*(w.length-1) >= size) return false;
+    const pr = r-dr, pc = c-dc, ar = r+dr*w.length, ac = c+dc*w.length;
+    if(pr >= 0 && pc >= 0 && pr < size && pc < size && grid[pr][pc]) return false;
+    if(ar >= 0 && ac >= 0 && ar < size && ac < size && grid[ar][ac]) return false;
+    let overlaps = 0;
+    for(let i=0;i<w.length;i++){
+      const rr = r+dr*i, cc = c+dc*i, cell = grid[rr][cc];
+      if(cell){
+        if(cell !== w[i]) return false;
+        overlaps++;
+      } else {
+        const n1r = rr+dc, n1c = cc+dr, n2r = rr-dc, n2c = cc-dr;
+        if(n1r >= 0 && n1r < size && n1c >= 0 && n1c < size && grid[n1r][n1c]) return false;
+        if(n2r >= 0 && n2r < size && n2c >= 0 && n2c < size && grid[n2r][n2c]) return false;
+      }
+    }
+    return placed.length === 0 || overlaps > 0;
+  }
+  function place(wo, r, c, dr, dc){
+    for(let i=0;i<wo.word.length;i++) grid[r+dr*i][c+dc*i] = wo.word[i];
+    placed.push({word:wo.word, emoji:wo.emoji, r, c, dr, dc});
+  }
+  place(words[0], Math.floor(size/2), Math.floor((size - words[0].word.length)/2), 0, 1);
+  for(let k=1; k<words.length && placed.length<6; k++){
+    const w = words[k].word;
+    let done = false;
+    for(const p of placed){
+      if(done) break;
+      for(let i=0;i<p.word.length && !done;i++){
+        for(let j=0;j<w.length && !done;j++){
+          if(p.word[i] !== w[j]) continue;
+          const rr = p.r + p.dr*i, cc = p.c + p.dc*i;
+          const dr = p.dc, dc = p.dr;
+          const r0 = rr - dr*j, c0 = cc - dc*j;
+          if(canPlace(w, r0, c0, dr, dc)){ place(words[k], r0, c0, dr, dc); done = true; }
+        }
+      }
+    }
+  }
+  return {grid, placed, size};
+}
+function startSilang(){
+  const cand = wordPairs(state.darjah).filter(p => /^[a-z]{3,8}$/.test(p.word));
+  let best = null;
+  for(let att=0; att<6; att++){
+    const cw = buildCrossword(shuffle([...cand]).slice(0, 12));
+    if(!best || cw.placed.length > best.placed.length) best = cw;
+    if(best.placed.length >= 6) break;
+  }
+  let r0=99, c0=99, r1=-1, c1=-1;
+  best.placed.forEach(p=>{
+    for(let i=0;i<p.word.length;i++){
+      const r = p.r+p.dr*i, c = p.c+p.dc*i;
+      r0=Math.min(r0,r); c0=Math.min(c0,c); r1=Math.max(r1,r); c1=Math.max(c1,c);
+    }
+  });
+  cwState = {...best, letters:{}, locked:new Set(), sel:null, b:{r0,c0,r1,c1}};
+  renderSilang();
+  cwSelect(0, 0);
+}
+function cwWordsAt(r, c){
+  const out = [];
+  cwState.placed.forEach((p,w)=>{
+    for(let i=0;i<p.word.length;i++)
+      if(p.r+p.dr*i === r && p.c+p.dc*i === c) out.push({w, pos:i});
+  });
+  return out;
+}
+function cwFixed(r, c){
+  for(const w of cwState.locked){
+    const p = cwState.placed[w];
+    for(let i=0;i<p.word.length;i++)
+      if(p.r+p.dr*i === r && p.c+p.dc*i === c) return p.word[i];
+  }
+  return null;
+}
+function renderSilang(){
+  const s = cwState, b = s.b;
+  const cols = b.c1 - b.c0 + 1;
+  let cells = '';
+  for(let r=b.r0; r<=b.r1; r++){
+    for(let c=b.c0; c<=b.c1; c++){
+      if(!s.grid[r][c]){ cells += '<span class="cw-block"></span>'; continue; }
+      const starts = s.placed.map((p,w)=> (p.r===r && p.c===c) ? w+1 : 0).filter(Boolean);
+      cells += `<button class="cw-cell" data-r="${r}" data-c="${c}" ${starts.length?`data-num="${starts[0]}"`:''}></button>`;
+    }
+  }
+  const clues = s.placed.map((p,w)=>
+    `<button class="cw-clue" data-w="${w}"><b>${w+1}</b> <span>${p.emoji}</span></button>`).join('');
+  const keys = 'abcdefghijklmnopqrstuvwxyz'.split('').map(k=>
+    `<button class="cw-key" data-k="${k}">${k}</button>`).join('') +
+    `<button class="cw-key cw-del" data-k="⌫">⌫</button>`;
+  $('gameBoard').innerHTML =
+    `<div class="cw-grid" style="grid-template-columns:repeat(${cols}, var(--cwc))">${cells}</div>` +
+    `<div class="cw-clues">${clues}</div>` +
+    `<div class="cw-keys">${keys}</div>`;
+  $('gameInfo').textContent = '0/' + s.placed.length;
+  $('gameBoard').querySelectorAll('.cw-cell').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const r = +el.dataset.r, c = +el.dataset.c;
+      const ws = cwWordsAt(r, c);
+      if(!ws.length) return;
+      ensureAudio(); playTap();
+      let pick = ws[0];
+      if(s.sel && ws.length > 1 && ws.some(x=>x.w === s.sel.w)) pick = ws.find(x=>x.w !== s.sel.w) || pick;
+      cwSelect(pick.w, pick.pos);
+    });
+  });
+  $('gameBoard').querySelectorAll('.cw-clue').forEach(el=>{
+    el.addEventListener('click', ()=>{ ensureAudio(); playTap(); cwSelect(+el.dataset.w, 0); });
+  });
+  $('gameBoard').querySelectorAll('.cw-key').forEach(el=>{
+    el.addEventListener('click', ()=> cwKey(el.dataset.k));
+  });
+  cwPaint();
+}
+function cwSelect(w, pos){
+  if(cwState.locked.has(w)){
+    const open = cwState.placed.findIndex((p,i)=> !cwState.locked.has(i));
+    if(open < 0) return;
+    w = open; pos = 0;
+  }
+  cwState.sel = {w, pos};
+  cwPaint();
+}
+function cwPaint(){
+  const s = cwState;
+  $('gameBoard').querySelectorAll('.cw-cell').forEach(el=>{
+    const r = +el.dataset.r, c = +el.dataset.c;
+    const fixed = cwFixed(r, c);
+    el.textContent = fixed || s.letters[r+','+c] || '';
+    el.classList.toggle('locked', !!fixed);
+    let inSel = false, isCur = false;
+    if(s.sel){
+      const p = s.placed[s.sel.w];
+      for(let i=0;i<p.word.length;i++){
+        if(p.r+p.dr*i === r && p.c+p.dc*i === c){ inSel = true; isCur = (i === s.sel.pos); }
+      }
+    }
+    el.classList.toggle('sel', inSel);
+    el.classList.toggle('cur', isCur && !fixed);
+  });
+  $('gameBoard').querySelectorAll('.cw-clue').forEach(el=>{
+    el.classList.toggle('done', s.locked.has(+el.dataset.w));
+    el.classList.toggle('sel', !!s.sel && +el.dataset.w === s.sel.w);
+  });
+}
+function cwKey(k){
+  const s = cwState;
+  if(!s.sel) return;
+  ensureAudio(); playTap();
+  const p = s.placed[s.sel.w];
+  const cellAt = i => ({r: p.r+p.dr*i, c: p.c+p.dc*i});
+  if(k === '⌫'){
+    let i = s.sel.pos;
+    while(i >= 0){
+      const {r,c} = cellAt(i);
+      if(!cwFixed(r,c) && s.letters[r+','+c]){ delete s.letters[r+','+c]; s.sel.pos = i; break; }
+      i--;
+      if(i >= 0) s.sel.pos = i;
+    }
+    cwPaint();
+    return;
+  }
+  {
+    const {r,c} = cellAt(s.sel.pos);
+    if(!cwFixed(r,c)) s.letters[r+','+c] = k;
+  }
+  let nxt = s.sel.pos + 1;
+  while(nxt < p.word.length){
+    const {r,c} = cellAt(nxt);
+    if(!cwFixed(r,c) && !s.letters[r+','+c]) break;
+    nxt++;
+  }
+  s.sel.pos = Math.min(nxt, p.word.length - 1);
+  cwPaint();
+  let full = true, guess = '';
+  for(let i=0;i<p.word.length;i++){
+    const {r,c} = cellAt(i);
+    const ch = cwFixed(r,c) || s.letters[r+','+c];
+    if(!ch){ full = false; break; }
+    guess += ch;
+  }
+  if(!full) return;
+  if(guess === p.word){
+    s.locked.add(s.sel.w);
+    playCorrect();
+    setTimeout(()=> speakShort(p.word), 380);
+    starBurst(1);
+    $('gameInfo').textContent = s.locked.size + '/' + s.placed.length;
+    if(s.locked.size === s.placed.length){ cwPaint(); finishGame('silang', 0); return; }
+    cwSelect(s.sel.w, 0);
+  } else {
+    playWrong();
+    const grid = $('gameBoard').querySelector('.cw-grid');
+    if(grid){ grid.classList.remove('shake'); void grid.offsetWidth; grid.classList.add('shake'); }
+    setTimeout(()=>{
+      for(let i=0;i<p.word.length;i++){
+        const {r,c} = cellAt(i);
+        if(!cwFixed(r,c)) delete s.letters[r+','+c];
+      }
+      s.sel.pos = 0;
+      cwPaint();
+    }, 550);
+  }
+}
+
+/* ---------- 3) CARI PERKATAAN ---------- */
+function startCari(){
+  const N = 9;
+  const dirs = state.darjah === 1 ? [[0,1],[1,0]] : [[0,1],[1,0],[1,1]];
+  const pool = shuffle(wordPairs(state.darjah).filter(p => /^[a-z]{3,7}$/.test(p.word)));
+  const grid = Array.from({length:N}, ()=> Array(N).fill(null));
+  const placed = [];
+  for(const p of pool){
+    if(placed.length >= 6) break;
+    let ok = false;
+    for(let att=0; att<80 && !ok; att++){
+      const [dr,dc] = dirs[rnd(0, dirs.length-1)];
+      const r = rnd(0, N-1 - dr*(p.word.length-1));
+      const c = rnd(0, N-1 - dc*(p.word.length-1));
+      let fits = true;
+      for(let i=0;i<p.word.length;i++){
+        const cell = grid[r+dr*i][c+dc*i];
+        if(cell && cell !== p.word[i]){ fits = false; break; }
+      }
+      if(!fits) continue;
+      for(let i=0;i<p.word.length;i++) grid[r+dr*i][c+dc*i] = p.word[i];
+      placed.push({...p, r, c, dr, dc});
+      ok = true;
+    }
+  }
+  const letters = 'abcdeghiklmnoprstu';
+  for(let r=0;r<N;r++) for(let c=0;c<N;c++)
+    if(!grid[r][c]) grid[r][c] = letters[rnd(0, letters.length-1)];
+  wsState = {N, grid, placed, found:new Set(), anchor:null, foundCells:new Set()};
+  $('gameBoard').innerHTML =
+    '<div class="ws-grid">' +
+    grid.map((row,r)=> row.map((ch,c)=>
+      `<button class="ws-cell" data-r="${r}" data-c="${c}">${ch}</button>`).join('')).join('') +
+    '</div><div class="ws-words">' +
+    placed.map((p,i)=> `<span class="ws-word" data-w="${i}">${p.emoji} ${p.word}</span>`).join('') +
+    '</div>';
+  $('gameInfo').textContent = '0/' + placed.length;
+  $('gameBoard').querySelectorAll('.ws-cell').forEach(el=>{
+    el.addEventListener('click', ()=> wsTap(+el.dataset.r, +el.dataset.c, el));
+  });
+}
+function wsTap(r, c, el){
+  const s = wsState;
+  ensureAudio(); playTap();
+  if(!s.anchor){
+    s.anchor = {r, c, el};
+    el.classList.add('ws-anchor');
+    return;
+  }
+  if(s.anchor.r === r && s.anchor.c === c){
+    el.classList.remove('ws-anchor'); s.anchor = null; return;
+  }
+  const a = s.anchor;
+  a.el.classList.remove('ws-anchor');
+  s.anchor = null;
+  const dr = Math.sign(r - a.r), dc = Math.sign(c - a.c);
+  const len = Math.max(Math.abs(r - a.r), Math.abs(c - a.c)) + 1;
+  const straight = (a.r === r) || (a.c === c) || (Math.abs(r - a.r) === Math.abs(c - a.c));
+  if(!straight) { wsFlashBad(); return; }
+  let word = '';
+  const cells = [];
+  for(let i=0;i<len;i++){
+    const rr = a.r + dr*i, cc = a.c + dc*i;
+    word += s.grid[rr][cc];
+    cells.push(rr + ',' + cc);
+  }
+  const rev = word.split('').reverse().join('');
+  const hit = s.placed.findIndex((p,i)=> !s.found.has(i) && (p.word === word || p.word === rev));
+  if(hit >= 0){
+    s.found.add(hit);
+    cells.forEach(k=> s.foundCells.add(k));
+    $('gameBoard').querySelectorAll('.ws-cell').forEach(cl=>{
+      if(s.foundCells.has(cl.dataset.r + ',' + cl.dataset.c)) cl.classList.add('ws-found');
+    });
+    const chip = $('gameBoard').querySelector(`.ws-word[data-w="${hit}"]`);
+    if(chip) chip.classList.add('done');
+    playCorrect();
+    setTimeout(()=> speakShort(s.placed[hit].word), 380);
+    $('gameInfo').textContent = s.found.size + '/' + s.placed.length;
+    if(s.found.size === s.placed.length) finishGame('cari', 3);
+  } else {
+    wsFlashBad();
+  }
+}
+function wsFlashBad(){
+  playWrong();
+  const grid = $('gameBoard').querySelector('.ws-grid');
+  if(grid){ grid.classList.remove('shake'); void grid.offsetWidth; grid.classList.add('shake'); }
+}
+
+/* ---------- 4) LETUPKAN BELON ---------- */
+function startBelon(){
+  belState = {round:0, total:8, score:0, firstTry:true, lock:false};
+  nextBelon();
+}
+function genBelonQ(){
+  const d = state.darjah;
+  let a, b, ans, txt;
+  if(d === 1){ a = rnd(1,9); b = rnd(1, 10-a); ans = a+b; txt = `${a} + ${b} = ?`; }
+  else if(d === 2){
+    if(Math.random() < 0.5){ a = rnd(10,60); b = rnd(10, 99-a); ans = a+b; txt = `${a} + ${b} = ?`; }
+    else { a = rnd(2,5); b = rnd(2,9); ans = a*b; txt = `${a} × ${b} = ?`; }
+  } else {
+    if(Math.random() < 0.5){ a = rnd(6,9); b = rnd(3,9); ans = a*b; txt = `${a} × ${b} = ?`; }
+    else { b = rnd(3,9); ans = rnd(3,9); a = b*ans; txt = `${a} ÷ ${b} = ?`; }
+  }
+  const opts = new Set([ans]);
+  while(opts.size < 6){
+    const cand = ans + rnd(-10, 10);
+    if(cand > 0) opts.add(cand);
+  }
+  return {txt, ans, opts: shuffle([...opts])};
+}
+function nextBelon(){
+  const s = belState;
+  s.firstTry = true; s.lock = false;
+  if(s.round >= s.total){ finishGame('belon', s.score >= 6 ? 3 : 2); return; }
+  const q = genBelonQ();
+  s.q = q;
+  const colors = ['#FF5D8F','#FFD23F','#00BBA7','#3A86FF','#9B5DE5','#FF7B39'];
+  $('gameBoard').innerHTML =
+    `<div class="bel-q">${q.txt}</div>
+     <div class="bel-field">` +
+    q.opts.map((o,i)=>
+      `<button class="belon" data-o="${o}" style="--bc:${colors[i%6]};animation-delay:${(i*0.35).toFixed(2)}s">
+         <span>${o}</span><i></i>
+       </button>`).join('') +
+    `</div>`;
+  $('gameInfo').textContent = (s.round+1) + '/' + s.total;
+  $('gameBoard').querySelectorAll('.belon').forEach(el=>{
+    el.addEventListener('click', ()=> popBelon(el));
+  });
+}
+function popBelon(el){
+  const s = belState;
+  if(s.lock) return;
+  ensureAudio();
+  if(+el.dataset.o === s.q.ans){
+    s.lock = true;
+    el.classList.add('pop-belon');
+    playCorrect();
+    if(s.firstTry) s.score++;
+    s.round++;
+    setTimeout(nextBelon, 750);
+  } else {
+    s.firstTry = false;
+    playWrong();
+    el.classList.add('bel-wrong');
+    setTimeout(()=> el.classList.remove('bel-wrong'), 500);
+  }
+}
+
+document.querySelectorAll('[data-g]').forEach(card=>{
+  card.addEventListener('click', ()=>{
+    ensureAudio(); playTap();
+    card.classList.add('launch');
+    setTimeout(()=>{ card.classList.remove('launch'); startGame(card.dataset.g); }, 380);
+  });
+});
+$('gameBackBtn').addEventListener('click', ()=> show('home'));
+$('gameHomeBtn').addEventListener('click', ()=> show('home'));
+$('gameAgainBtn').addEventListener('click', ()=> startGame(curGame));
+
+
 function applyLang(){
   const t = UI[lang];
   $('langBtn').textContent = lang === 'bm' ? '🌐 EN' : '🌐 BM';
   document.querySelector('.bubble').innerHTML = t.greet;
   const labels = document.querySelectorAll('.section-label');
-  [t.lblDarjah, t.lblMisi, t.lblKawan, t.lblNama, t.lblEmel].forEach((s,i)=>{ if(labels[i]) labels[i].textContent = s; });
+  [t.lblDarjah, t.lblMisi, t.lblGames, t.lblKawan, t.lblNama, t.lblEmel].forEach((s,i)=>{ if(labels[i]) labels[i].textContent = s; });
   document.querySelectorAll('.darjah-btn').forEach(b => b.textContent = t.year + ' ' + b.dataset.d);
   const cards = document.querySelectorAll('.module-card');
   ['membaca','menulis','mengira'].forEach((m,i)=>{
@@ -1292,10 +1917,12 @@ function applyLang(){
   if(dt) dt.textContent = t.done;
   if(state.module) $('lessonTitle').textContent = modName(state.module) + ' · ' + t.year + ' ' + state.darjah;
   if($('lesson').classList.contains('active') && state.module) renderQuestion();
+  refreshGameTexts();
   checkVoiceBanner();
 }
 $('langBtn').addEventListener('click', ()=>{ lang = lang === 'bm' ? 'en' : 'bm'; applyLang(); ensureAudio(); playTap(); });
 applyLang();
+
 
 /* splash selamat datang */
 (function(){
