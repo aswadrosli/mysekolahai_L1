@@ -6,6 +6,7 @@
 <title>SekolahAI — Bukan Sekolah Biasa</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
   :root{
     --ink:#3A2E4F;
@@ -530,6 +531,39 @@
   @media (min-width:700px){ .ca-obj{font-size:2.6rem} .ca-wrap{min-height:84px;gap:10px} }
   @media (prefers-reduced-motion:reduce){
     .ca-in,.ca-leave{animation:none!important;opacity:1!important;transform:none!important}
+  }
+
+  /* ============ MANIPULATIF BAHAGI ============ */
+  .dv-wrap{width:100%;display:flex;flex-direction:column;gap:10px;align-items:center}
+  .dv-hint{font-weight:800;font-size:.88rem;color:var(--ink-soft);text-align:center}
+  .dv-hint.ok{color:var(--teal-d);font-size:1rem}
+  .dv-pool{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;
+    min-height:74px;width:100%;padding:10px;border-radius:16px;
+    background:var(--pink-soft);border:3px dashed var(--lilac-2)}
+  .dv-bubble{font-size:1.9rem;line-height:1;cursor:grab;user-select:none;touch-action:none;
+    transition:transform .12s;display:inline-block}
+  .dv-bubble:active{cursor:grabbing}
+  .dv-bubble.dv-drag{position:fixed;z-index:80;pointer-events:none;transform:scale(1.25);
+    filter:drop-shadow(0 6px 10px rgba(58,46,79,.35))}
+  .dv-plates{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;width:100%}
+  .dv-plate{flex:1 1 90px;min-width:90px;min-height:92px;border-radius:18px;position:relative;
+    background:#fff;border:3px solid var(--lilac-2);padding:8px 6px 22px;
+    display:flex;align-items:center;justify-content:center;transition:.15s}
+  .dv-plate.filled{border-color:var(--biru);background:var(--sky)}
+  .dv-plate.done{border-color:var(--teal);background:var(--mint)}
+  .dv-plate-in{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center}
+  .dv-plate-in .dv-bubble{font-size:1.5rem}
+  .dv-count{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);
+    font-family:var(--font-head);font-weight:600;font-size:.95rem;color:var(--biru-d);
+    background:#fff;border-radius:999px;padding:0 8px;border:2px solid var(--lilac-2)}
+  .dv-plate.done .dv-count{color:var(--teal-d);border-color:var(--teal)}
+  .dv-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .dv-btn{padding:9px 16px;font-size:.9rem}
+  @media (min-width:700px){
+    .dv-bubble{font-size:2.3rem}
+    .dv-plate{min-height:112px;min-width:110px}
+    .dv-plate-in .dv-bubble{font-size:1.8rem}
+    .dv-hint{font-size:1rem}
   }
 
 </style>
@@ -1490,8 +1524,10 @@ function renderTrace(q, card){
 /* ---- Mengira ---- */
 function renderKira(q, card){
   const anim = countAnim(q.math, q);
+  const dvd  = anim ? null : divAnim(q.math, q);
   card.innerHTML = `
     ${anim ? `<div class="ca-wrap" id="caWrap"></div>`
+           : dvd ? `<div class="dv-wrap" id="dvWrap"></div>`
            : (q.objects ? `<div class="q-objects">${q.objects}</div>` : '')}
     <div class="q-math">${trPrompt(q.math)}</div>
     <div class="options">
@@ -1499,12 +1535,141 @@ function renderKira(q, card){
     </div>
   `;
   if(anim) playCountAnim(anim);
+  if(dvd) buildDivision(dvd);
   card.querySelectorAll('.opt').forEach(b=>{
     b.addEventListener('click', ()=>{
       if(String(b.dataset.o) === String(q.answer)) onCorrect(q);
       else onWrong(q, ()=>{});
     });
   });
+}
+
+/* ========= MANIPULATIF BAHAGI — buih boleh seret ke dalam bakul =========
+   Contoh 12 ÷ 3: 12 buih + 3 bakul. Murid seret buih ke dalam bakul
+   sehingga setiap bakul sama banyak. Jawapan = isi setiap bakul. */
+const DV_MAX_TOTAL = 36;   // had buih supaya muat pada skrin
+const DV_MAX_GROUP = 9;    // had bilangan bakul
+function divAnim(math, q){
+  if(!math) return null;
+  const m = /^\s*(\d+)\s*(?:÷|\/)\s*(\d+)\s*=/.exec(math);
+  if(!m) return null;
+  const a = +m[1], b = +m[2];
+  if(!b || a % b !== 0) return null;
+  if(a > DV_MAX_TOTAL || b > DV_MAX_GROUP || b < 2) return null;
+  return {a, b, ans: a / b, emoji: pickEmoji(q)};
+}
+let dvState = null;
+function buildDivision(d){
+  const wrap = document.getElementById('dvWrap');
+  if(!wrap) return;
+  dvState = {...d, placed: new Array(d.b).fill(0), done: false};
+  const bm = lang === 'bm';
+  wrap.innerHTML =
+    `<div class="dv-hint" id="dvHint">${bm
+        ? `Seret buih ke dalam ${d.b} bakul sehingga sama banyak!`
+        : `Drag the bubbles into ${d.b} baskets until each has the same amount!`}</div>
+     <div class="dv-pool" id="dvPool">${
+       Array.from({length:d.a},(_,i)=>`<span class="dv-bubble" data-i="${i}">${d.emoji}</span>`).join('')
+     }</div>
+     <div class="dv-plates" id="dvPlates">${
+       Array.from({length:d.b},(_,i)=>
+         `<div class="dv-plate" data-p="${i}"><span class="dv-plate-in"></span><b class="dv-count">0</b></div>`
+       ).join('')
+     }</div>
+     <div class="dv-actions">
+       <button class="btn btn-luar dv-btn" id="dvReset">${bm?'Susun Semula':'Reset'}</button>
+       <button class="btn btn-luar dv-btn" id="dvAuto">${bm?'Tunjuk Saya':'Show Me'}</button>
+     </div>`;
+  wrap.querySelectorAll('.dv-bubble').forEach(b=> dvMakeDraggable(b));
+  document.getElementById('dvReset').addEventListener('click', ()=>{ ensureAudio(); playTap(); buildDivision(d); });
+  document.getElementById('dvAuto').addEventListener('click', ()=> dvAuto());
+}
+function dvMakeDraggable(el){
+  el.addEventListener('pointerdown', ev=>{
+    if(dvState && dvState.done) return;
+    ev.preventDefault();
+    ensureAudio();
+    const rect = el.getBoundingClientRect();
+    const dx = ev.clientX - rect.left, dy = ev.clientY - rect.top;
+    el.classList.add('dv-drag');
+    el.style.width = rect.width + 'px';
+    el.style.height = rect.height + 'px';
+    const move = e=>{
+      el.style.left = (e.clientX - dx) + 'px';
+      el.style.top  = (e.clientY - dy) + 'px';
+    };
+    const up = e=>{
+      el.classList.remove('dv-drag');
+      el.style.left = el.style.top = el.style.width = el.style.height = '';
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+      dvDrop(el, e.clientX, e.clientY);
+    };
+    move(ev);
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  });
+}
+function dvDrop(el, x, y){
+  let target = null;
+  try {
+    const hit = document.elementFromPoint(x, y);
+    if(hit) target = hit.closest ? hit.closest('.dv-plate, .dv-pool') : null;
+  } catch(e){}
+  if(target && target.classList.contains('dv-plate')){
+    target.querySelector('.dv-plate-in').appendChild(el);
+    playTap();
+  } else {
+    const pool = document.getElementById('dvPool');
+    if(pool && el.parentElement !== pool) pool.appendChild(el);
+  }
+  dvRefresh();
+}
+function dvRefresh(){
+  if(!dvState) return;
+  const plates = document.querySelectorAll('.dv-plate');
+  let counts = [];
+  plates.forEach(p=>{
+    const n = p.querySelectorAll('.dv-bubble').length;
+    counts.push(n);
+    p.querySelector('.dv-count').textContent = n;
+    p.classList.toggle('filled', n > 0);
+  });
+  const poolLeft = document.querySelectorAll('#dvPool .dv-bubble').length;
+  const allUsed = poolLeft === 0;
+  const equal = counts.every(n=> n === counts[0]);
+  if(allUsed && equal && counts[0] === dvState.ans && !dvState.done){
+    dvState.done = true;
+    const bm = lang === 'bm';
+    const hint = document.getElementById('dvHint');
+    if(hint){
+      hint.textContent = bm
+        ? `Setiap bakul ada ${dvState.ans}! Jadi ${dvState.a} ÷ ${dvState.b} = ${dvState.ans}`
+        : `Each basket has ${dvState.ans}! So ${dvState.a} ÷ ${dvState.b} = ${dvState.ans}`;
+      hint.classList.add('ok');
+    }
+    plates.forEach(p=> p.classList.add('done'));
+    playCorrect();
+  }
+}
+function dvAuto(){
+  if(!dvState || dvState.done) return;
+  ensureAudio(); playTap();
+  const pool = document.getElementById('dvPool');
+  const plates = [...document.querySelectorAll('.dv-plate')];
+  // kembalikan semua ke kolam dahulu
+  plates.forEach(p=> p.querySelectorAll('.dv-bubble').forEach(b=> pool.appendChild(b)));
+  const bubbles = [...pool.querySelectorAll('.dv-bubble')];
+  let i = 0;
+  const step = ()=>{
+    if(i >= bubbles.length){ dvRefresh(); return; }
+    const plate = plates[i % plates.length];
+    plate.querySelector('.dv-plate-in').appendChild(bubbles[i]);
+    dvRefresh();
+    i++;
+    setTimeout(step, 140);
+  };
+  step();
 }
 
 /* ========= ANIMASI MENGIRA (tambah/tolak, bilangan <= 12) ========= */
@@ -1708,8 +1873,9 @@ function showReward(){
   [523.25,659.25,783.99,1046.5,1318.5].forEach((f,i)=> tone(f, i*0.11, 0.4, 'triangle', 0.18));
   spawnConfetti();
   // hantar laporan secara automatik jika e-mel ibu bapa telah diisi
+  logForDigest(total);
   if($('parentEmail').value.trim()){
-    setTimeout(sendReport, 900);
+    setTimeout(flushDigests, 900);
   }
 }
 
@@ -1770,12 +1936,239 @@ Keep up the great support!
 
 SekolahAI — Bukan Sekolah Biasa`;
   }
+  deliverReport({ email, subject, body, nama, total });
+}
+
+/* ================= LAPORAN HARIAN (DIGEST) =================
+   Satu e-mel sehari, bukan satu e-mel setiap misi.
+   Ini menjimatkan kuota EmailJS (pelan percuma = 200 e-mel/bulan). */
+const DIGEST_KEY = 'sekolahai_digest';
+function todayKey(){ return new Date().toISOString().slice(0,10); }
+function loadDigest(){
+  try { return JSON.parse(localStorage.getItem(DIGEST_KEY) || '{}'); } catch(e){ return {}; }
+}
+function saveDigest(d){
+  try { localStorage.setItem(DIGEST_KEY, JSON.stringify(d)); } catch(e){}
+}
+function logForDigest(total){
+  const d = loadDigest();
+  const k = todayKey();
+  d[k] = d[k] || { sent:false, items:[] };
+  d[k].items.push({
+    module: state.module,
+    darjah: state.darjah,
+    correct: state.correct,
+    total: total,
+    stars: state.stars,
+    skills: [...new Set(questions().map(q=>q.skill))],
+  });
+  if(d[k].items.length > 30) d[k].items = d[k].items.slice(-30);
+  // buang rekod lebih 14 hari
+  Object.keys(d).forEach(key=>{ if(key < todayKey() && (new Date(todayKey()) - new Date(key)) > 14*864e5) delete d[key]; });
+  saveDigest(d);
+}
+function buildDigest(dateKey, entry){
+  const bm = lang === 'bm';
+  const nama = $('studentName').value.trim() || (bm ? 'Anak anda' : 'Your child');
+  const items = entry.items;
+  const misi = items.length;
+  const betul = items.reduce((s,i)=>s+i.correct,0);
+  const jum   = items.reduce((s,i)=>s+i.total,0);
+  const bintang = items.length ? items[items.length-1].stars : 0;
+  const skills = [...new Set(items.flatMap(i=>i.skills))];
+  const tarikh = new Date(dateKey + 'T00:00:00').toLocaleDateString(bm ? 'ms-MY' : 'en-MY',
+    {day:'numeric', month:'long', year:'numeric'});
+  const baris = items.map(i=>
+    bm ? `  • ${modName(i.module)} (Darjah ${i.darjah}) — ${i.correct}/${i.total} betul`
+       : `  • ${modName(i.module)} (Year ${i.darjah}) — ${i.correct}/${i.total} correct`).join('\n');
+
+  const subject = bm
+    ? `Laporan Harian SekolahAI — ${nama} — ${tarikh}`
+    : `SekolahAI Daily Report — ${nama} — ${tarikh}`;
+
+  const body = bm
+? `Assalamualaikum / Salam sejahtera,
+
+Ini laporan harian ${nama} di SekolahAI.
+
+Tarikh: ${tarikh}
+Misi disiapkan: ${misi}
+Jumlah betul pada cubaan pertama: ${betul}/${jum}
+Jumlah bintang terkumpul: ${bintang}
+
+Butiran misi:
+${baris}
+
+Kemahiran yang dilatih:
+${skills.map(s=>'  - '+s).join('\n')}
+
+Terima kasih kerana menyokong pembelajaran anak anda.
+
+SekolahAI — Bukan Sekolah Biasa
+hello@mysekolah.ai`
+: `Hello,
+
+Here is ${nama}'s daily report from SekolahAI.
+
+Date: ${tarikh}
+Missions completed: ${misi}
+Correct on first try: ${betul}/${jum}
+Total stars collected: ${bintang}
+
+Mission details:
+${baris}
+
+Skills practised:
+${skills.map(s=>'  - '+s).join('\n')}
+
+Thank you for supporting your child's learning.
+
+SekolahAI — Bukan Sekolah Biasa
+hello@mysekolah.ai`;
+
+  return { subject, body, nama };
+}
+/* Hantar digest hari-hari LEPAS yang belum dihantar (hari ini masih terkumpul) */
+function flushDigests(){
+  const email = $('parentEmail').value.trim();
+  if(!email) return;
+  const d = loadDigest();
+  const today = todayKey();
+  const pending = Object.keys(d).filter(k => k < today && !d[k].sent && d[k].items.length);
+  if(!pending.length){
+    const bm = lang === 'bm';
+    $('emailStatus').textContent = bm
+      ? '📩 Laporan harian akan dihantar kepada ibu bapa.'
+      : '📩 A daily report will be sent to your parent.';
+    return;
+  }
+  pending.sort();
+  const k = pending[0];
+  const r = buildDigest(k, d[k]);
+  deliverReport({ email, subject:r.subject, body:r.body, nama:r.nama, total:0, onSent:()=>{
+    const dd = loadDigest();
+    if(dd[k]){ dd[k].sent = true; saveDigest(dd); }
+  }});
+}
+/* Butang manual: hantar ringkasan HARI INI serta-merta */
+function sendReportNow(){
+  const email = $('parentEmail').value.trim();
+  if(!email){
+    $('emailStatus').textContent = lang === 'bm'
+      ? 'Sila isi e-mel ibu bapa di halaman utama dahulu.'
+      : "Please fill in the parent's email on the home page first.";
+    return;
+  }
+  const d = loadDigest();
+  const k = todayKey();
+  if(!d[k] || !d[k].items.length){
+    $('emailStatus').textContent = lang === 'bm'
+      ? 'Belum ada misi disiapkan hari ini.'
+      : 'No missions completed yet today.';
+    return;
+  }
+  const r = buildDigest(k, d[k]);
+  deliverReport({ email, subject:r.subject, body:r.body, nama:r.nama, total:0, onSent:()=>{
+    const dd = loadDigest();
+    if(dd[k]){ dd[k].sent = true; saveDigest(dd); }
+  }});
+}
+
+/* ================= PENGHANTARAN E-MEL ================= */
+/* EMAILJS — isi 3 nilai ini selepas daftar di emailjs.com.
+   Ketiga-tiganya SELAMAT untuk didedahkan dalam kod (bukan kata laluan).
+   Jika dibiarkan kosong, aplikasi guna kaedah mailto seperti sebelum ini. */
+const EMAILJS_CONFIG = {
+  publicKey:  '',   // cth: 'AbC123xyz_publicKey'
+  serviceId:  '',   // cth: 'service_ab12cde'
+  templateId: '',   // cth: 'template_xy34zab'
+};
+const EMAILJS_READY = !!(EMAILJS_CONFIG.publicKey && EMAILJS_CONFIG.serviceId && EMAILJS_CONFIG.templateId);
+
+/* PILIHAN A (disyorkan) — endpoint sendiri, TIADA pihak ketiga.
+   Muat naik hantar-laporan.php ke hosting anda, kemudian isi URL penuh:
+   contoh 'https://mysekolah.ai/hantar-laporan.php'. Biarkan kosong untuk melangkau. */
+const MAIL_ENDPOINT = '';
+if(EMAILJS_READY && typeof emailjs !== 'undefined'){
+  try { emailjs.init({ publicKey: EMAILJS_CONFIG.publicKey }); } catch(e){}
+}
+
+/* Had harian per peranti — melindungi kuota EmailJS daripada disalahguna */
+const MAIL_CAP_PER_DAY = 6;
+function mailQuotaOk(){
+  try{
+    const today = new Date().toISOString().slice(0,10);
+    const raw = JSON.parse(localStorage.getItem('sekolahai_mailcount') || '{}');
+    if(raw.date !== today) return true;
+    return (raw.n || 0) < MAIL_CAP_PER_DAY;
+  }catch(e){ return true; }
+}
+function mailQuotaBump(){
+  try{
+    const today = new Date().toISOString().slice(0,10);
+    const raw = JSON.parse(localStorage.getItem('sekolahai_mailcount') || '{}');
+    const n = (raw.date === today ? (raw.n || 0) : 0) + 1;
+    localStorage.setItem('sekolahai_mailcount', JSON.stringify({date: today, n}));
+  }catch(e){}
+}
+function openMailto(email, subject, body){
   window.location.href = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   $('emailStatus').textContent = lang === 'bm'
     ? 'Laporan dibuka dalam aplikasi e-mel anda — tekan Hantar.'
     : 'The report opened in your email app — press Send.';
 }
-$('emailBtn').addEventListener('click', sendReport);
+function reportSent(r){
+  mailQuotaBump();
+  if(typeof r.onSent === 'function') r.onSent();
+  $('emailStatus').textContent = lang === 'bm'
+    ? '✅ Laporan harian telah dihantar kepada ibu bapa.'
+    : '✅ Daily report sent to parent.';
+}
+function deliverReport(r){
+  const bm = lang === 'bm';
+  const hasSilent = !!MAIL_ENDPOINT || (EMAILJS_READY && typeof emailjs !== 'undefined');
+  if(!hasSilent){ openMailto(r.email, r.subject, r.body); return; }
+  if(!mailQuotaOk()){
+    $('emailStatus').textContent = bm
+      ? 'Had laporan harian dicapai. Laporan seterusnya esok.'
+      : 'Daily report limit reached. Next report tomorrow.';
+    return;
+  }
+  $('emailStatus').textContent = bm ? 'Menghantar laporan…' : 'Sending report…';
+
+  /* PILIHAN A — endpoint sendiri (tiada pihak ketiga) */
+  if(MAIL_ENDPOINT){
+    fetch(MAIL_ENDPOINT, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({to:r.email, student:r.nama, subject:r.subject, body:r.body})
+    })
+    .then(res=> res.json().catch(()=> ({ok:res.ok})))
+    .then(j=>{ if(j && j.ok) reportSent(r); else throw new Error('endpoint gagal'); })
+    .catch(err=>{
+      console.warn('Endpoint gagal:', err);
+      if(EMAILJS_READY && typeof emailjs !== 'undefined') sendViaEmailJS(r);
+      else openMailto(r.email, r.subject, r.body);
+    });
+    return;
+  }
+  /* PILIHAN B — EmailJS */
+  sendViaEmailJS(r);
+}
+function sendViaEmailJS(r){
+  emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
+    to_email: r.email,
+    student_name: r.nama,
+    subject: r.subject,
+    message: r.body,
+    reply_to: 'hello@mysekolah.ai',
+  }).then(()=> reportSent(r))
+    .catch(err=>{
+      console.warn('EmailJS gagal, guna mailto:', err);
+      openMailto(r.email, r.subject, r.body);
+    });
+}
+$('emailBtn').addEventListener('click', sendReportNow);
 
 /* ================= CONFETTI ================= */
 function spawnConfetti(hostSel){
@@ -2566,6 +2959,8 @@ function showGate(){
   input.addEventListener('keydown', e=>{ if(e.key === 'Enter') tryCode(); });
   input.focus();
 }
+
+setTimeout(()=>{ try{ if($('parentEmail').value.trim()) flushDigests(); }catch(e){} }, 3000);
 
 /* splash selamat datang -> kemudian gerbang kod akses */
 (function(){
